@@ -1,5 +1,5 @@
 const createRequest = async (options, callback) => {
-    const request = fetch('http://localhost:3000/new-user', {
+    const request = fetch('https://websocket-chat-3iqe.onrender.com/new-user', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -8,12 +8,6 @@ const createRequest = async (options, callback) => {
     });
 
     const result = await request;
-
-    if (!result.ok) {
-        console.error('ERROR!');
-
-        return;
-    }
 
     const json = await result.json();
 

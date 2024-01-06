@@ -7,5 +7,6 @@ export default class Entity {
   
     update() {}
   
-    delete() {}
-  }
+    delete() {
+      
+  }};

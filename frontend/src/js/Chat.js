@@ -12,6 +12,8 @@ export default class Chat {
    const regForm = document.querySelector('.modal__form');
    regForm.classList.add('active');
    regForm.classList.remove('hidden');
+   const errMsg = document.querySelector('.modal__header');
+  errMsg.textContent = "Choose nickname!";
    console.log('Chat init!');
 
    const modalOk = document.querySelector('.modal__ok');
@@ -19,16 +21,20 @@ export default class Chat {
    modalOk.addEventListener('click', (e) => {
       e.preventDefault();
       const errMsg = document.querySelector('.modal__header');
-          errMsg.textContent = "";
       const nameInput = document.querySelector('.modal__form .form__input');
+      if (!nameInput.value) return;
+
+          errMsg.textContent = "";
       
+
       const options = {
         data: {
           name: nameInput.value,
         },
-       }
+       };
                                   // CALLBACK
        this.api.register(options, (data) => {
+        console.log('data stat: ', data.status)
         if (data.status === 'error') {
           const errMsg = document.querySelector('.modal__header');
           errMsg.textContent = "This name already exists! Try another one!";
@@ -63,7 +69,7 @@ export default class Chat {
       const data = JSON.parse(e.data);
 
       if (data.type === 'send') {
-       // data.forEach(userInfo => {
+       
           const message = document.createElement('div');
           data.name === this.userName ? message.classList.add('message__container-yourself') : message.classList.add('message__container');
           const msgHeader = document.createElement('div');
@@ -76,7 +82,7 @@ export default class Chat {
           message.appendChild(document.createTextNode(data.text));
           messages.appendChild(message);
           messages.appendChild(inter);
-   //   });
+  
       } else {
         userList.innerHTML = '';
         data.forEach(userInfo => {
@@ -85,9 +91,7 @@ export default class Chat {
           userInfo.name === this.userName ? user.textContent = 'You' : user.textContent = userInfo.name;
           userList.appendChild(user);
       });
-      }
-  
-     
+      }     
   
       console.log('ws message');
   });
@@ -101,26 +105,41 @@ export default class Chat {
     sendBtn.addEventListener('click', (event) => {
 
       event.preventDefault();
+
+      if (!chatMessage.value) return;
     
       const message = {
         type: 'send',
         text: chatMessage.value,
         name: this.userName,
       };
-      
-  
-      if (!message) return;
-  
-      this.websocket.send(JSON.stringify(message));
-  
+
+      this.websocket.send(JSON.stringify(message));  
       chatMessage.value = '';
     });
 
+    const exitBtn = document.querySelector('.exit__btn');
+   
+    exitBtn.addEventListener('click', (event) => {
+      console.log('EXIT clicked!');
+      event.preventDefault();
     
+      const message = {
+        type: 'exit',
+        user: {
+          name: this.userName,
+        },
+      };     
+  
+      this.websocket.send(JSON.stringify(message));
+      const chatContainer = document.querySelector('.container');
+      chatContainer.classList.add('hidden');
+      this.init();
+    });
   }
 
   onEnterChatHandler() {
-    this.websocket = new WebSocket('ws://localhost:3000/ws');
+    this.websocket = new WebSocket('ws://websocket-chat-3iqe.onrender.com/ws');
     this.websocket.addEventListener('open', (e)=> {
       console.log(e);
   
