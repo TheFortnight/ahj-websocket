@@ -9,12 +9,12 @@ branches:
 cache: node_modules  # кеширование
 
 install:
+  - cd ./frontend
   - npm install  # команда установки зависимостей
 
 build: off  # отключаем встроенную в appveyor систему сборки
 
 build_script:
-  - cd ./frontend
   - npm start   # команда сборки
 
 
